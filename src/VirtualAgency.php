@@ -21,13 +21,13 @@ class VirtualAgency
 
     protected $endpoint = [
         'authentication' => 'https://farm3.sat.gob.gt/menu/init.do',
-        'application' => 'https://farm3.sat.gob.gt/menu/menuAplicacion.jsp',
-        'security' => 'https://farm3.sat.gob.gt/menu/Seguridad.do',
-        'portal' => 'https://farm3.sat.gob.gt/agenciaVirtual-web/pages/agenciaPortada.jsf',
-        'new-dte' => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/fel.jsf',
-        'void-dte' => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/anulacionDte.jsf',
-        'verify-dte' => 'https://felcons.c.sat.gob.gt/dte-agencia-virtual/dte-consulta',
-        'fel-rest' => 'https://felav02.c.sat.gob.gt/fel-rest/rest'
+        'application'    => 'https://farm3.sat.gob.gt/menu/menuAplicacion.jsp',
+        'security'       => 'https://farm3.sat.gob.gt/menu/Seguridad.do',
+        'portal'         => 'https://farm3.sat.gob.gt/agenciaVirtual-web/pages/agenciaPortada.jsf',
+        'new-dte'        => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/fel.jsf',
+        'void-dte'       => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/anulacionDte.jsf',
+        'verify-dte'     => 'https://felcons.c.sat.gob.gt/dte-agencia-virtual/dte-consulta',
+        'fel-rest'       => 'https://felav02.c.sat.gob.gt/fel-rest/rest'
     ];
 
     public function __construct($username, $password)
@@ -106,21 +106,21 @@ class VirtualAgency
         // Authenticate on Agencia Virtual
         $params = [
             'operacion' => 'ACEPTAR',
-            'login' => $this->username,
-            'password' => $this->password
+            'login'     => $this->username,
+            'password'  => $this->password
         ];
         $result = $this->sendRequest('authentication', $params, 'POST');
 
-        return (strpos($result, 'nombreApp=AgenciaVirtual') !== false);
+        return strpos($result, 'nombreApp=AgenciaVirtual') !== false;
     }
 
     protected function getSecurityToken()
     {
         $params = [
             'nombreApp' => 'AgenciaVirtual',
-            'pllamada' => '1'
+            'pllamada'  => '1'
         ];
-        $token = [];
+        $token  = [];
         $result = $this->sendRequest('application', $params, 'GET');
 
         if (strpos($result, 'Seguridad.do') !== false) {
@@ -155,7 +155,7 @@ class VirtualAgency
 
             if (isset($html[1])) {
                 $html = explode('" name="desplegar"', $html[1], 2);
-                $url = urldecode($html[0]);
+                $url  = urldecode($html[0]);
             }
         }
 
@@ -181,7 +181,7 @@ class VirtualAgency
 
             if (isset($html[1])) {
                 $html = explode('">', $html[1], 2);
-                $url = str_replace('&amp;', '&', urldecode($html[0]));
+                $url  = str_replace('&amp;', '&', urldecode($html[0]));
                 parse_str($url, $token);
             }
         }
@@ -205,7 +205,7 @@ class VirtualAgency
 
             if (isset($html[1])) {
                 $html = explode('">', $html[1], 2);
-                $url = str_replace('&amp;', '&', urldecode($html[0]));
+                $url  = str_replace('&amp;', '&', urldecode($html[0]));
                 parse_str($url, $token);
             }
         }
@@ -229,7 +229,7 @@ class VirtualAgency
 
             if (isset($html[1])) {
                 $html = explode('">', $html[1], 2);
-                $url = str_replace('&amp;', '&', urldecode($html[0]));
+                $url  = str_replace('&amp;', '&', urldecode($html[0]));
                 parse_str($url, $token);
             }
         }
