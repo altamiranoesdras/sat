@@ -15,5 +15,4 @@ use Exception;
 
 class Authentication extends Exception
 {
-
 }
