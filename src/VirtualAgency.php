@@ -38,7 +38,7 @@ class VirtualAgency
         $authentication = $this->authenticate();
 
         if (!$authentication) {
-            throw new \Exception('The given combination of username and password is incorrect');
+            throw new Error\Authentication('The given combination of username and password is incorrect');
         }
     }
 
@@ -50,7 +50,7 @@ class VirtualAgency
         if (isset($this->endpoint[$endpoint])) {
             $url = $this->endpoint[$endpoint];
         } else {
-            throw new \Exception('The specified endpoint does not exist in the system');
+            throw new Error\InvalidEndpoint('The specified endpoint does not exist in the system');
         }
 
         // Build GET request
@@ -130,10 +130,10 @@ class VirtualAgency
                 $html = explode('\', null, null],', $html[1], 2);
                 parse_str($html[0], $token);
             } else {
-                throw new \Exception('An error occurred trying to get the authorization token');
+                throw new Error\Authentication('An error occurred trying to get the authorization token');
             }
         } else {
-            throw new \Exception('An error occurred trying to initialize the application');
+            throw new Error\UnknownError('An error occurred trying to initialize the application');
         }
 
         return $token;

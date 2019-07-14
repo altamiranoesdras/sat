@@ -133,7 +133,6 @@ class TaxCalendar
                     $event['asisteweb_form'] = trim($element[3]);
                 }
 
-                //$events[] = $element;
                 $events[] = (object) $event;
             }
         }

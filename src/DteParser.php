@@ -50,7 +50,7 @@ class DteParser
         $dte = $this->getDte();
         $ds  = $this->getSignature();
 
-        $document = [];
+        $document = (array) json_decode(json_encode($dte));
 
         // Fetch DTE properties
         if (isset($dte->SAT->DTE)) {
