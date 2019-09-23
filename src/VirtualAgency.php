@@ -4,11 +4,11 @@
  * to the portal and virtual agency of the Superintendencia de Administración Tributaria
  * of Guatemala.
  *
- * @package Sat
+ * @package    Sat
  * @subpackage Sat.VirtualAgency
- * @copyright Copyright (c) 2018-2019 Abdy Franco. All Rights Reserved.
- * @license https://opensource.org/licenses/MIT The MIT License (MIT)
- * @author Abdy Franco <iam@abdyfran.co>
+ * @copyright  Copyright (c) 2018-2019 Abdy Franco. All Rights Reserved.
+ * @license    https://opensource.org/licenses/MIT The MIT License (MIT)
+ * @author     Abdy Franco <iam@abdyfran.co>
  */
 
 namespace Sat;
@@ -18,6 +18,8 @@ class VirtualAgency
     protected $username;
 
     protected $password;
+
+    protected $session_dir;
 
     protected $endpoint = [
         'authentication' => 'https://farm3.sat.gob.gt/menu/init.do',
@@ -30,11 +32,19 @@ class VirtualAgency
         'fel-rest'       => 'https://felav02.c.sat.gob.gt/fel-rest/rest'
     ];
 
-    public function __construct($username, $password)
+    public function __construct($username, $password, $session_dir = null)
     {
         $this->username = $username;
         $this->password = $password;
 
+        // Set the session directory
+        if (is_null($session_dir)) {
+            $this->session_dir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+        } else {
+            $this->session_dir = rtrim($session_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        }
+
+        // Authenticate in to the Virtual Agency system
         $authentication = $this->authenticate();
 
         if (!$authentication) {
@@ -42,15 +52,24 @@ class VirtualAgency
         }
     }
 
-    protected function sendRequest($endpoint, $params = [], $method = 'GET', $referer = null)
+    protected function sendRequest($endpoint, $params = null, $method = 'GET', $referer = null, $endpoint_uri = null, array $headers = [])
     {
         $curl = curl_init();
 
         // Set request URL
         if (isset($this->endpoint[$endpoint])) {
-            $url = $this->endpoint[$endpoint];
+            $url = $this->endpoint[$endpoint] . (isset($endpoint_uri) ? $endpoint_uri : '');
         } else {
             throw new Error\InvalidEndpoint('The specified endpoint does not exist in the system');
+        }
+
+        // Set request headers
+        if (!empty($headers)) {
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+            if (in_array('Content-Type: application/json;charset=UTF-8', $headers) && (is_array($params) || is_object($params))) {
+                $params = json_encode($params, JSON_UNESCAPED_UNICODE);
+            }
         }
 
         // Build GET request
@@ -79,15 +98,14 @@ class VirtualAgency
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HEADER, true);
 
         // Set referer
         if (!is_null($referer)) {
             curl_setopt($curl, CURLOPT_REFERER, trim($referer));
         }
 
-        // Create And Save Cookies
-        $cookie = dirname(__FILE__) . DIRECTORY_SEPARATOR . $this->username . '.txt';
+        // Create and save the request cookie
+        $cookie = $this->session_dir . md5($this->username) . '.txt';
 
         curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie);
         curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie);
@@ -103,7 +121,6 @@ class VirtualAgency
 
     private function authenticate()
     {
-        // Authenticate on Agencia Virtual
         $params = [
             'operacion' => 'ACEPTAR',
             'login'     => $this->username,
@@ -235,5 +252,19 @@ class VirtualAgency
         }
 
         return $token;
+    }
+
+    protected function getTaxpayerSettings()
+    {
+        // Fetch the DTE token
+        $token = $this->getNewDteToken();
+
+        return json_decode($this->sendRequest(
+            'fel-rest',
+            [],
+            'GET',
+            $this->endpoint['portal'],
+            '/publico/configuracion/' . $token['Nit'] . '/' . $token['Clave']
+        ));
     }
 }

@@ -3,11 +3,11 @@
  * Provides a wrapper class for fetching and parsing the online tax calendar of
  * Superintendencia de Administración Tributaria of Guatemala.
  *
- * @package Sat
+ * @package    Sat
  * @subpackage Sat.TaxCalendar
- * @copyright Copyright (c) 2018-2019 Abdy Franco. All Rights Reserved.
- * @license https://opensource.org/licenses/MIT The MIT License (MIT)
- * @author Abdy Franco <iam@abdyfran.co>
+ * @copyright  Copyright (c) 2018-2019 Abdy Franco. All Rights Reserved.
+ * @license    https://opensource.org/licenses/MIT The MIT License (MIT)
+ * @author     Abdy Franco <iam@abdyfran.co>
  */
 
 namespace Sat;
