@@ -99,7 +99,7 @@ class DteParser
 
                         $document['DatosEmision']->Frases->Frase[] = $node;
                     }
-                } else if (is_object($document['DatosEmision']->Frases->Frase)) {
+                } elseif (is_object($document['DatosEmision']->Frases->Frase)) {
                     $content    = (array) $dte->SAT->DTE->DatosEmision->Frases->Frase;
                     $attributes = (array) $dte->SAT->DTE->DatosEmision->Frases->Frase->attributes();
                     $attributes = $attributes['@attributes'];
@@ -122,7 +122,7 @@ class DteParser
 
                         $document['DatosEmision']->Items->Item[] = $node;
                     }
-                } else if (is_object($document['DatosEmision']->Items->Item)) {
+                } elseif (is_object($document['DatosEmision']->Items->Item)) {
                     $content    = (array) $dte->SAT->DTE->DatosEmision->Items->Item;
                     $attributes = (array) $dte->SAT->DTE->DatosEmision->Items->Item->attributes();
                     $attributes = $attributes['@attributes'];
@@ -145,7 +145,7 @@ class DteParser
 
                         $document['DatosEmision']->Complementos->Complemento[] = $node;
                     }
-                } else if (is_object($document['DatosEmision']->Complementos->Complemento)) {
+                } elseif (is_object($document['DatosEmision']->Complementos->Complemento)) {
                     $content    = (array) $dte->SAT->DTE->DatosEmision->Complementos->Complemento->children('cex', true);
                     $attributes = (array) $dte->SAT->DTE->DatosEmision->Complementos->Complemento->attributes();
                     $attributes = $attributes['@attributes'];
@@ -203,7 +203,7 @@ class DteParser
 
                         $document['Signature']->SignedInfo->Reference[] = $node;
                     }
-                } else if (is_object($document['Signature']->SignedInfo->Reference)) {
+                } elseif (is_object($document['Signature']->SignedInfo->Reference)) {
                     $content    = (array) $ds->Signature->SignedInfo->Reference;
                     $attributes = (array) $ds->Signature->SignedInfo->Reference->attributes();
                     $attributes = $attributes['@attributes'];
