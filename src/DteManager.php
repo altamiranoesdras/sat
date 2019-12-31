@@ -12,6 +12,8 @@
 
 namespace Sat;
 
+include 'VirtualAgency.php';
+
 class DteManager extends VirtualAgency
 {
     private $settings;
@@ -99,7 +101,7 @@ class DteManager extends VirtualAgency
                 throw new Error\DteError($process->mensaje);
             }
         } else {
-            throw new Error\Authentication('The given combination of username and password is incorrect');
+            throw new Error\UnknownError('An error occurred trying to initialize the application');
         }
     }
 

@@ -99,6 +99,11 @@ class VirtualAgency
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
+        // Fetch headers
+        if ($endpoint == 'authentication') {
+            curl_setopt($curl, CURLOPT_HEADER, true);
+        }
+
         // Set referer
         if (!is_null($referer)) {
             curl_setopt($curl, CURLOPT_REFERER, trim($referer));
@@ -128,7 +133,7 @@ class VirtualAgency
         ];
         $result = $this->sendRequest('authentication', $params, 'POST');
 
-        return strpos($result, 'nombreApp=AgenciaVirtual') !== false;
+        return strpos($result, 'Virtual') !== false;
     }
 
     protected function getSecurityToken()
