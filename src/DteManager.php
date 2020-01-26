@@ -12,8 +12,6 @@
 
 namespace Sat;
 
-include 'VirtualAgency.php';
-
 class DteManager extends VirtualAgency
 {
     private $settings;
