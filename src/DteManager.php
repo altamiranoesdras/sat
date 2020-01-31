@@ -194,9 +194,16 @@ class DteManager extends VirtualAgency
 
                 $item['NumeroLinea'] = $item_id;
 
+                // Format quantity
+                if ($item['Cantidad'] > 0) {
+                    $item['Cantidad'] = $item['Cantidad'] + 0;
+                } else {
+                    $item['Cantidad'] = 0;
+                }
+
                 // Format unitary price
                 if ($item['PrecioUnitario'] > 0) {
-                    $item['PrecioUnitario'] = number_format($item['PrecioUnitario'], 6);
+                    $item['PrecioUnitario'] = $item['PrecioUnitario'] + 0;
                 } else {
                     $item['PrecioUnitario'] = 0;
                 }
@@ -287,7 +294,7 @@ class DteManager extends VirtualAgency
                         ],
                         'Emisor'         => [
                             'DireccionEmisor'       => [
-                                'Direccion'    => $current_branch->calleAvenida . '  ' . $current_branch->numeroCasa . ' ' . $current_branch->colonia . ', zona ' . $current_branch->zona . ', ' . $current_branch->municipio . ', ' . $current_branch->departamento,
+                                'Direccion'    => $current_branch->calleAvenida . "  " . $current_branch->numeroCasa . ' ' . $current_branch->colonia . ', zona ' . $current_branch->zona . ', ' . $current_branch->municipio . ', ' . $current_branch->departamento,
                                 'CodigoPostal' => 1,
                                 'municipio'    => $current_branch->municipio,
                                 'departamento' => $current_branch->departamento,
@@ -321,7 +328,7 @@ class DteManager extends VirtualAgency
                     ],
                     'Certificacion' => [
                         'NITCertificador'        => '16693949',
-                        'NombreCertificador'     => 'SuperIntendencia de Administracion Tributaria',
+                        'NombreCertificador'     => 'Superintendencia de Administracion Tributaria',
                         'NumeroAutorizacion'     => [
                             'Serie'  => 'F72BA9CD',
                             'Numero' => '226052895',
