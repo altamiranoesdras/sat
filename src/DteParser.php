@@ -12,11 +12,21 @@
 
 namespace Sat;
 
+use SimpleXMLElement;
+
 class DteParser
 {
+    /**
+     * @var \SimpleXMLElement The DTE XML object.
+     */
     private $xml;
 
-    public function __construct($xml)
+    /**
+     * DteParser constructor.
+     *
+     * @param string $xml The DTE XML string or the file path.
+     */
+    public function __construct(string $xml)
     {
         // Check if the provided argument it's a file
         if (file_exists($xml)) {
@@ -30,21 +40,43 @@ class DteParser
         $this->xml = simplexml_load_string($xml);
     }
 
-    public function getXmlObject()
+    /**
+     * Get the DTE XML object.
+     *
+     * @return \SimpleXMLElement Returns the DTE XML object.
+     */
+    public function getXmlObject() : SimpleXMLElement
     {
         return $this->xml;
     }
 
-    public function getDte()
+    /**
+     * Get the DTE namespace.
+     *
+     * @return \SimpleXMLElement Returns the DTE namespace object.
+     */
+    public function getDte() : SimpleXMLElement
     {
         return $this->xml->children('dte', true);
     }
 
-    public function getSignature()
+    /**
+     * Get the Signature namespace.
+     *
+     * @return \SimpleXMLElement Returns the Signature namespace object.
+     */
+    public function getSignature() : SimpleXMLElement
     {
         return $this->xml->children('ds', true);
     }
 
+    /**
+     * Get the parsed DTE document.
+     *
+     * @param bool $json True to return the result as a JSON object, false to return an standard class.
+     *
+     * @return \stdClass|string The JSON object as string or the standard class.
+     */
     public function getParsedDocument($json = false)
     {
         $dte = $this->getDte();
@@ -99,7 +131,7 @@ class DteParser
 
                         $document['DatosEmision']->Frases->Frase[] = $node;
                     }
-                } elseif (is_object($document['DatosEmision']->Frases->Frase)) {
+                } else if (is_object($document['DatosEmision']->Frases->Frase)) {
                     $content    = (array) $dte->SAT->DTE->DatosEmision->Frases->Frase;
                     $attributes = (array) $dte->SAT->DTE->DatosEmision->Frases->Frase->attributes();
                     $attributes = $attributes['@attributes'];
@@ -122,7 +154,7 @@ class DteParser
 
                         $document['DatosEmision']->Items->Item[] = $node;
                     }
-                } elseif (is_object($document['DatosEmision']->Items->Item)) {
+                } else if (is_object($document['DatosEmision']->Items->Item)) {
                     $content    = (array) $dte->SAT->DTE->DatosEmision->Items->Item;
                     $attributes = (array) $dte->SAT->DTE->DatosEmision->Items->Item->attributes();
                     $attributes = $attributes['@attributes'];
@@ -145,8 +177,11 @@ class DteParser
 
                         $document['DatosEmision']->Complementos->Complemento[] = $node;
                     }
-                } elseif (is_object($document['DatosEmision']->Complementos->Complemento)) {
-                    $content    = (array) $dte->SAT->DTE->DatosEmision->Complementos->Complemento->children('cex', true);
+                } else if (is_object($document['DatosEmision']->Complementos->Complemento)) {
+                    $content    = (array) $dte->SAT->DTE->DatosEmision->Complementos->Complemento->children(
+                        'cex',
+                        true
+                    );
                     $attributes = (array) $dte->SAT->DTE->DatosEmision->Complementos->Complemento->attributes();
                     $attributes = $attributes['@attributes'];
                     $node       = (object) array_merge($content, $attributes);
@@ -203,7 +238,7 @@ class DteParser
 
                         $document['Signature']->SignedInfo->Reference[] = $node;
                     }
-                } elseif (is_object($document['Signature']->SignedInfo->Reference)) {
+                } else if (is_object($document['Signature']->SignedInfo->Reference)) {
                     $content    = (array) $ds->Signature->SignedInfo->Reference;
                     $attributes = (array) $ds->Signature->SignedInfo->Reference->attributes();
                     $attributes = $attributes['@attributes'];

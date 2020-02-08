@@ -12,11 +12,28 @@
 
 namespace Sat;
 
+use stdClass;
+
 class DteManager extends VirtualAgency
 {
+    /**
+     * @var \stdClass The taxpayer settings.
+     */
     private $settings;
 
-    public function __construct($username, $password, $fel_password, $session_dir = null)
+    /**
+     * DteManager constructor.
+     *
+     * @param string      $username     The SAT virtual agency username.
+     * @param string      $password     The SAT virtual agency password.
+     * @param string      $fel_password The FEL certifier password.
+     * @param string|null $session_dir  The session directory.
+     *
+     * @throws \Sat\Error\Authentication
+     * @throws \Sat\Error\InvalidEndpoint
+     * @throws \Sat\Error\UnknownError
+     */
+    public function __construct(string $username, string $password, string $fel_password, string $session_dir = null)
     {
         parent::__construct($username, $password, $session_dir);
 
@@ -31,7 +48,18 @@ class DteManager extends VirtualAgency
         $this->settings     = $this->getTaxpayerSettings();
     }
 
-    public function createNewDte(array $invoice = [])
+    /**
+     * Create a new DTE.
+     *
+     * @param array $invoice An array containing all the invoice parameters.
+     *
+     * @return \stdClass
+     * @throws \Sat\Error\Authentication
+     * @throws \Sat\Error\DteError
+     * @throws \Sat\Error\InvalidEndpoint
+     * @throws \Sat\Error\UnknownError
+     */
+    public function createNewDte(array $invoice = []) : stdClass
     {
         // Fetch the DTE token
         $token = $this->getNewDteToken();
@@ -49,39 +77,46 @@ class DteManager extends VirtualAgency
                 'Accept: application/json;charset=utf-8',
                 'Content-Type: application/json;charset=UTF-8'
             ];
-            $process = json_decode($this->sendRequest(
-                'fel-rest',
-                $request,
-                'POST',
-                $this->endpoint['new-dte'] . '?' . http_build_query($token),
-                '/publico/procesarDocumento', $headers
-            ));
+            $process = json_decode(
+                $this->sendRequest(
+                    'fel-rest',
+                    $request,
+                    'POST',
+                    $this->endpoint['new-dte'] . '?' . http_build_query($token),
+                    '/publico/procesarDocumento',
+                    $headers
+                )
+            );
 
             // Sign request
             if ($process->estadoHttp == 200) {
                 $request['frasePaso'] = $this->fel_password;
 
-                $signing = json_decode($this->sendRequest(
-                    'fel-rest',
-                    $request,
-                    'POST',
-                    $this->endpoint['new-dte'] . '?' . http_build_query($token),
-                    '/publico/firmarDocumento',
-                    $headers
-                ));
+                $signing = json_decode(
+                    $this->sendRequest(
+                        'fel-rest',
+                        $request,
+                        'POST',
+                        $this->endpoint['new-dte'] . '?' . http_build_query($token),
+                        '/publico/firmarDocumento',
+                        $headers
+                    )
+                );
 
                 // Issue document certificate
                 if ($signing->estadoHttp == 200) {
                     $xml = isset($signing->detalle[0]->mensaje) ? $signing->detalle[0]->mensaje : '';
 
-                    $certification = json_decode($this->sendRequest(
-                        'fel-rest',
-                        $xml,
-                        'POST',
-                        $this->endpoint['new-dte'] . '?' . http_build_query($token),
-                        '/publico/certificarDocumento',
-                        $headers
-                    ));
+                    $certification = json_decode(
+                        $this->sendRequest(
+                            'fel-rest',
+                            $xml,
+                            'POST',
+                            $this->endpoint['new-dte'] . '?' . http_build_query($token),
+                            '/publico/certificarDocumento',
+                            $headers
+                        )
+                    );
 
                     // Build response
                     $response = [
@@ -103,27 +138,52 @@ class DteManager extends VirtualAgency
         }
     }
 
-    public function getTaxpayer()
+    /**
+     * Get the taxpayer settings.
+     *
+     * @return \stdClass An object with all the taxpayer settings.
+     */
+    public function getTaxpayer() : stdClass
     {
-        return $this->settings;
+        return (object) $this->settings;
     }
 
-    public function getDteTypes()
+    /**
+     * Get all the DTE types.
+     *
+     * @return array An array containing all the DTE types.
+     */
+    public function getDteTypes() : array
     {
-        return $this->settings->respuesta->restriccionDocumento;
+        return (array) $this->settings->respuesta->restriccionDocumento;
     }
 
-    public function getBranches()
+    /**
+     * Get all branches.
+     *
+     * @return array An array containing all the registered branches.
+     */
+    public function getBranches() : array
     {
-        return $this->settings->respuesta->informacionEmisor->establecimientos;
+        return (array) $this->settings->respuesta->informacionEmisor->establecimientos;
     }
 
-    public function getPhrases()
+    /**
+     * Get phrases.
+     *
+     * @return array An array containing the required phrases.
+     */
+    public function getPhrases() : array
     {
-        return $this->settings->respuesta->informacionEmisor->frases;
+        return (array) $this->settings->respuesta->informacionEmisor->frases;
     }
 
-    public function getErrorsCode()
+    /**
+     * Get the error codes.
+     *
+     * @return array An array containing all the error codes of the API.
+     */
+    public function getErrorsCode() : array
     {
         $errors   = [];
         $messages = $this->settings->respuesta->contenidoMensajes->Contenido;
@@ -137,7 +197,12 @@ class DteManager extends VirtualAgency
         return $errors;
     }
 
-    public function getAvailablePhrases()
+    /**
+     * Get all the available phrases.
+     *
+     * @return array An array containing all the available phrases.
+     */
+    public function getAvailablePhrases() : array
     {
         $available_phrases = $this->settings->respuesta->frasesGenerales;
         $phrases           = [];
@@ -157,12 +222,24 @@ class DteManager extends VirtualAgency
         return $phrases;
     }
 
-    public function getInternationalCommercialTerms()
+    /**
+     * Get the international commercial terms.
+     *
+     * @return array An array containing all the international commercial terms.
+     */
+    public function getInternationalCommercialTerms() : array
     {
-        return $this->settings->respuesta->catalogosGenerales->incoterms;
+        return (array) $this->settings->respuesta->catalogosGenerales->incoterms;
     }
 
-    private function getDteRequest(array $params)
+    /**
+     * Get a DTE issuing request.
+     *
+     * @param array $params An array containing all the parameters required by the DTE document.
+     *
+     * @return array An array contaning the API response and the DTE document.
+     */
+    private function getDteRequest(array $params) : array
     {
         // Get DTE types
         $types = $this->getDteTypes();
@@ -224,7 +301,10 @@ class DteManager extends VirtualAgency
 
                 // Format total price with discount
                 if ((($item['PrecioUnitario'] * $item['Cantidad']) - $item['Descuento']) > 0) {
-                    $item['Total'] = number_format((($item['PrecioUnitario'] * $item['Cantidad']) - $item['Descuento']), 6);
+                    $item['Total'] = number_format(
+                        (($item['PrecioUnitario'] * $item['Cantidad']) - $item['Descuento']),
+                        6
+                    );
                 } else {
                     $item['Total'] = 0;
                 }

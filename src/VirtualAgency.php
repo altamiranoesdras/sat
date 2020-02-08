@@ -13,14 +13,28 @@
 
 namespace Sat;
 
+use stdClass;
+
 class VirtualAgency
 {
+    /**
+     * @var string The SAT virtual agency username.
+     */
     protected $username;
 
+    /**
+     * @var string The SAT virtual agency password.
+     */
     protected $password;
 
+    /**
+     * @var string The session directory.
+     */
     protected $session_dir;
 
+    /**
+     * @var array An array of all available endpoints.
+     */
     protected $endpoint = [
         'authentication' => 'https://farm3.sat.gob.gt/menu/init.do',
         'application'    => 'https://farm3.sat.gob.gt/menu/menuAplicacion.jsp',
@@ -29,10 +43,21 @@ class VirtualAgency
         'new-dte'        => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/fel.jsf',
         'void-dte'       => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/anulacionDte.jsf',
         'verify-dte'     => 'https://felcons.c.sat.gob.gt/dte-agencia-virtual/dte-consulta',
-        'fel-rest'       => 'https://felav02.c.sat.gob.gt/fel-rest/rest'
+        'fel-rest'       => 'https://felav02.c.sat.gob.gt/fel-rest/rest',
+        'fel-recipient'  => 'https://felav02.c.sat.gob.gt/fel-rest/rest/publico/receptor'
     ];
 
-    public function __construct($username, $password, $session_dir = null)
+    /**
+     * VirtualAgency constructor.
+     *
+     * @param string      $username    The SAT virtual agency username.
+     * @param string      $password    The SAT virtual agency password.
+     * @param string|null $session_dir The session directory.
+     *
+     * @throws \Sat\Error\Authentication
+     * @throws \Sat\Error\InvalidEndpoint
+     */
+    public function __construct(string $username, string $password, string $session_dir = null)
     {
         $this->username = $username;
         $this->password = $password;
@@ -52,7 +77,20 @@ class VirtualAgency
         }
     }
 
-    protected function sendRequest($endpoint, $params = null, $method = 'GET', $referer = null, $endpoint_uri = null, array $headers = [])
+    /**
+     * Send a request to the API.
+     *
+     * @param string      $endpoint     The endpoint to send the request.
+     * @param array|null  $params       The parameters to be sond with the request.
+     * @param string      $method       The method for the HTTP call.
+     * @param string|null $referer      The HTTP referer.
+     * @param string|null $endpoint_uri Additional URI for the called endpoint.
+     * @param array       $headers      The HTTP headers.
+     *
+     * @return mixed The raw response from the API.
+     * @throws \Sat\Error\InvalidEndpoint
+     */
+    protected function sendRequest(string $endpoint, array $params = null, string $method = 'GET', string $referer = null, string $endpoint_uri = null, array $headers = [])
     {
         $curl = curl_init();
 
@@ -67,7 +105,9 @@ class VirtualAgency
         if (!empty($headers)) {
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
-            if (in_array('Content-Type: application/json;charset=UTF-8', $headers) && (is_array($params) || is_object($params))) {
+            if (in_array('Content-Type: application/json;charset=UTF-8', $headers) && (is_array($params) || is_object(
+                        $params
+                    ))) {
                 $params = json_encode($params, JSON_UNESCAPED_UNICODE);
             }
         }
@@ -124,7 +164,13 @@ class VirtualAgency
         return $result;
     }
 
-    private function authenticate()
+    /**
+     * Authenticate user.
+     *
+     * @return bool True if the user succesfully authenticated on to the virtual agency.
+     * @throws \Sat\Error\InvalidEndpoint
+     */
+    private function authenticate() : bool
     {
         $params = [
             'operacion' => 'ACEPTAR',
@@ -136,7 +182,15 @@ class VirtualAgency
         return strpos($result, 'Virtual') !== false;
     }
 
-    protected function getSecurityToken()
+    /**
+     * Get the security token for initialization of the main portal.
+     *
+     * @return array An array containing the issuer NIT and the security token.
+     * @throws \Sat\Error\Authentication
+     * @throws \Sat\Error\InvalidEndpoint
+     * @throws \Sat\Error\UnknownError
+     */
+    protected function getSecurityToken() : array
     {
         $params = [
             'nombreApp' => 'AgenciaVirtual',
@@ -161,7 +215,15 @@ class VirtualAgency
         return $token;
     }
 
-    protected function getPortalEndpoint()
+    /**
+     * Get the main portal endpoint url.
+     *
+     * @return string The url of the main portal endpoint.
+     * @throws \Sat\Error\Authentication
+     * @throws \Sat\Error\InvalidEndpoint
+     * @throws \Sat\Error\UnknownError
+     */
+    protected function getPortalEndpoint() : string
     {
         // Fetch the security token
         $token = $this->getSecurityToken();
@@ -187,7 +249,15 @@ class VirtualAgency
         return $url;
     }
 
-    protected function getNewDteToken()
+    /**
+     * Get the security token for DTE issuing.
+     *
+     * @return array An array containing the issuer NIT and the security token.
+     * @throws \Sat\Error\Authentication
+     * @throws \Sat\Error\InvalidEndpoint
+     * @throws \Sat\Error\UnknownError
+     */
+    protected function getNewDteToken() : array
     {
         // Initialize the portal
         $this->getPortalEndpoint();
@@ -211,7 +281,15 @@ class VirtualAgency
         return $token;
     }
 
-    protected function getVoidDteToken()
+    /**
+     * Get the security token for DTE voiding.
+     *
+     * @return array An array containing the issuer NIT and the security token.
+     * @throws \Sat\Error\Authentication
+     * @throws \Sat\Error\InvalidEndpoint
+     * @throws \Sat\Error\UnknownError
+     */
+    protected function getVoidDteToken() : array
     {
         // Initialize the portal
         $this->getPortalEndpoint();
@@ -235,7 +313,15 @@ class VirtualAgency
         return $token;
     }
 
-    protected function getVerifyDteToken()
+    /**
+     * Get the security token for DTE verification.
+     *
+     * @return array An array containing the issuer NIT and the security token.
+     * @throws \Sat\Error\Authentication
+     * @throws \Sat\Error\InvalidEndpoint
+     * @throws \Sat\Error\UnknownError
+     */
+    protected function getVerifyDteToken() : array
     {
         // Initialize the portal
         $this->getPortalEndpoint();
@@ -259,17 +345,60 @@ class VirtualAgency
         return $token;
     }
 
-    protected function getTaxpayerSettings()
+    /**
+     * Get the taxpayer information and settings.
+     *
+     * @return \stdClass An object with all the taxpayer settings.
+     * @throws \Sat\Error\Authentication
+     * @throws \Sat\Error\InvalidEndpoint
+     * @throws \Sat\Error\UnknownError
+     */
+    protected function getTaxpayerSettings() : stdClass
     {
         // Fetch the DTE token
         $token = $this->getNewDteToken();
 
-        return json_decode($this->sendRequest(
-            'fel-rest',
-            [],
-            'GET',
-            $this->endpoint['portal'],
-            '/publico/configuracion/' . $token['Nit'] . '/' . $token['Clave']
-        ));
+        return (object) json_decode(
+            $this->sendRequest(
+                'fel-rest',
+                [],
+                'GET',
+                $this->endpoint['portal'],
+                '/publico/configuracion/' . $token['Nit'] . '/' . $token['Clave']
+            )
+        );
+    }
+
+    /**
+     * Get recipient NIT information.
+     *
+     * @param string $nit The NIT to query.
+     *
+     * @return \stdClass A class containing the information of the provided NIT.
+     * @throws \Sat\Error\Authentication
+     * @throws \Sat\Error\InvalidEndpoint
+     * @throws \Sat\Error\UnknownError
+     */
+    public function getRecipientInformation(string $nit) : stdClass
+    {
+        // Fetch the DTE token
+        $token = $this->getNewDteToken();
+
+        $headers  = [
+            'Accept: application/json;charset=utf-8',
+            'Content-Type: application/json;charset=UTF-8'
+        ];
+        $response = json_decode(
+            $this->sendRequest(
+                'fel-recipient',
+                null,
+                'GET',
+                $this->endpoint['new-dte'] . '?' . http_build_query($token),
+                '/' . trim($nit),
+                $headers
+            )
+        );
+
+        return isset($response->respuesta) ? $response->respuesta : (object) [];
     }
 }

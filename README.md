@@ -19,7 +19,7 @@ $invoice = $DteParser->getParsedDocument(); // Returns an object with the parsed
 - Add the ability to verify existing DTE documents.
 
 ## Requirements
-PHP 5.6+. Other than that, this library has no external requirements.
+PHP 7.1+. Other than that, this library has no external requirements.
 
 ## Installation
 You can install this library via Composer.

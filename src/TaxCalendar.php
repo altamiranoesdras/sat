@@ -12,10 +12,18 @@
 
 namespace Sat;
 
+use stdClass;
+
 class TaxCalendar
 {
+    /**
+     * @var string The SAT tax calendar endpoint.
+     */
     private $url = 'https://farm2.sat.gob.gt/japSitio-web/consultas/paadServicios/calendario.jsf';
 
+    /**
+     * @var array An array containing the months names in spanish.
+     */
     private $months = [
         'ENERO'      => '01',
         'FEBRERO'    => '02',
@@ -31,8 +39,14 @@ class TaxCalendar
         'DICIEMBRE'  => '12'
     ];
 
+    /**
+     * @var bool|string The HTML content of the calendar.
+     */
     private $html;
 
+    /**
+     * TaxCalendar constructor.
+     */
     public function __construct()
     {
         // Fetch the HTML content from the SAT website
@@ -45,17 +59,27 @@ class TaxCalendar
         setlocale(LC_TIME, 'es_ES');
     }
 
-    private function getCalendarOptions()
+    /**
+     * Get the calendar options.
+     *
+     * @return \stdClass An object containing the calendar options.
+     */
+    private function getCalendarOptions() : stdClass
     {
         $first_part  = explode('ComboBox("calendario:cmbSeleccionaMes",', $this->html, 2);
         $second_part = explode(');</script>', $first_part[1], 2);
 
         $json = str_replace('\'', '"', $second_part[0]);
 
-        return json_decode(trim($json));
+        return (object) json_decode(trim($json));
     }
 
-    public function getEvents()
+    /**
+     * Get the calendar tax events.
+     *
+     * @return array An array containing all the tax calendar events for the current month.
+     */
+    public function getEvents() : array
     {
         $first_part  = explode('<tbody id="calendario:data:tb">', $this->html, 2);
         $second_part = explode('</tbody>', $first_part[1], 2);
@@ -94,8 +118,13 @@ class TaxCalendar
                 $calendar_date    = explode(' ', $calendar_options[0], 2);
 
                 $event = [
-                    'date'      => date('d/m/Y', strtotime($day . '-' . $this->months[strtoupper($calendar_date[0])] . '-' . $calendar_date[1])),
-                    'timestamp' => strtotime($day . '-' . $this->months[strtoupper($calendar_date[0])] . '-' . $calendar_date[1]),
+                    'date'      => date(
+                        'd/m/Y',
+                        strtotime($day . '-' . $this->months[strtoupper($calendar_date[0])] . '-' . $calendar_date[1])
+                    ),
+                    'timestamp' => strtotime(
+                        $day . '-' . $this->months[strtoupper($calendar_date[0])] . '-' . $calendar_date[1]
+                    ),
                     'day'       => $day,
                     'month'     => $this->months[strtoupper($calendar_date[0])],
                     'year'      => $calendar_date[1]
