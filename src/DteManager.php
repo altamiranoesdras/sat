@@ -431,6 +431,14 @@ class DteManager extends VirtualAgency
             ]
         ];
 
+        if ($dte_request['SAT']['DTE']['DatosEmision']['DatosGenerales']['Exp'] == 'NO') {
+            unset($dte_request['SAT']['DTE']['DatosEmision']['DatosGenerales']['Exp']);
+        }
+
+        if (empty($complements)) {
+            unset($dte_request['SAT']['DTE']['DatosEmision']['Complementos']);
+        }
+
         return $dte_request;
     }
 }

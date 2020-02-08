@@ -81,7 +81,8 @@ class VirtualAgency
      * Send a request to the API.
      *
      * @param string      $endpoint     The endpoint to send the request.
-     * @param array|null  $params       The parameters to be sond with the request.
+     * @param mixed|null  $params       The parameters to be send with the request, can be an array, an object or an
+     *                                  XML string.
      * @param string      $method       The method for the HTTP call.
      * @param string|null $referer      The HTTP referer.
      * @param string|null $endpoint_uri Additional URI for the called endpoint.
@@ -90,7 +91,7 @@ class VirtualAgency
      * @return mixed The raw response from the API.
      * @throws \Sat\Error\InvalidEndpoint
      */
-    protected function sendRequest(string $endpoint, array $params = null, string $method = 'GET', string $referer = null, string $endpoint_uri = null, array $headers = [])
+    protected function sendRequest(string $endpoint, $params = null, string $method = 'GET', string $referer = null, string $endpoint_uri = null, array $headers = [])
     {
         $curl = curl_init();
 
