@@ -252,6 +252,8 @@ class DteManager extends VirtualAgency
         $items       = [];
         $item_id     = 1;
         $grand_total = 0;
+        $total_impuestos = 0;
+
 
         $default_item = [
             'NumeroLinea'    => 1,
@@ -261,8 +263,16 @@ class DteManager extends VirtualAgency
             'PrecioUnitario' => 0,
             'Precio'         => 0,
             'Descuento'      => 0,
+            'Impuestos'      => [
+                [
+                    'CodigoUnidadGravable'  => 1,
+                    'MontoGravable'         => 0,
+                    'MontoImpuesto'         => 0,
+                    'NombreCorto'           => 'IVA',
+                ]
+            ],
             'Total'          => 0,
-            'MontoGrabable'  => 0
+            'MontoGravable'  => 0
         ];
 
         if (isset($params['DatosEmision']['Items']['Item'])) {
@@ -309,8 +319,37 @@ class DteManager extends VirtualAgency
                     $item['Total'] = 0;
                 }
 
+                // Format monto Gravable
+                if (($item['Total']) > 0) {
+                    $item['Impuestos'][$item_id-1]['MontoGravable'] = number_format( ($item['Total']/1.12),6);
+                }else {
+                    $item['Impuestos'][$item_id-1]['MontoGravable'] = 0;
+
+                }
+
+                // Format monto Impuesto
+                if (($item['Total']) > 0) {
+                    $item['Impuestos'][$item_id-1]['MontoImpuesto'] = number_format( ($item['Total'] - $item['Impuestos'][$item_id-1]['MontoGravable']),6);
+                }else {
+                    $item['Impuestos'][$item_id-1]['MontoImpuesto'] = 0;
+
+                }
+
+                // Format monto Gravable
+                if (($item['Total']) > 0) {
+                    $item['MontoGravable'] = number_format( ($item['Total']/1.12),6);
+                }else {
+                    $item['MontoGravable'] = 0;
+
+                }
+
+                $item['NumeroLinea'] = $item_id;
+
                 $items[]     = $item;
                 $grand_total = $grand_total + $item['Total'];
+
+
+                $total_impuestos = $total_impuestos + $item['Impuestos'][$item_id-1]['MontoImpuesto'];
 
                 $item_id++;
             }
@@ -318,6 +357,7 @@ class DteManager extends VirtualAgency
 
         // Format grand total
         $grand_total = number_format($grand_total, 6);
+        $total_impuestos = number_format($total_impuestos,6);
 
         // Get branch information
         $current_branch = [];
@@ -363,7 +403,7 @@ class DteManager extends VirtualAgency
 
         // Build DTE request
         $dte_request = [
-            'SAT'       => [
+            'SAT' => [
                 'DTE' => [
                     'DatosEmision'  => [
                         'DatosGenerales' => [
@@ -374,7 +414,7 @@ class DteManager extends VirtualAgency
                         ],
                         'Emisor'         => [
                             'DireccionEmisor'       => [
-                                'Direccion'    => $current_branch->calleAvenida . '  ' . $current_branch->numeroCasa . ' ' . $current_branch->colonia . ', zona ' . $current_branch->zona . ', ' . $current_branch->municipio . ', ' . $current_branch->departamento,
+                                'Direccion'    => $current_branch->calleAvenida . '  ' . $current_branch->numeroCasa . ' ' . 'zona ' . $current_branch->zona . ', ' . $current_branch->municipio . ', ' . $current_branch->departamento,
                                 'CodigoPostal' => 1,
                                 'municipio'    => $current_branch->municipio,
                                 'departamento' => $current_branch->departamento,
@@ -397,7 +437,16 @@ class DteManager extends VirtualAgency
                             'Item' => $items
                         ],
                         'Totales'        => [
-                            'GranTotal' => $grand_total
+                            'GranTotal' => $grand_total,
+                            'TotalImpuestos' => [
+                                'TotalImpuesto' =>[
+                                    [
+                                        'NombreCorto' => "IVA",
+                                        'TotalMontoImpuesto' => $total_impuestos,
+                                    ]
+                                ]
+                            ],
+
                         ],
                         'Frases'         => [
                             'Frase' => $phrases
