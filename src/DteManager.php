@@ -321,17 +321,17 @@ class DteManager extends VirtualAgency
 
                 // Format monto Gravable
                 if (($item['Total']) > 0) {
-                    $item['Impuestos'][$item_id-1]['MontoGravable'] = number_format( ($item['Total']/1.12),6);
+                    $item['Impuestos'][0]['MontoGravable'] = number_format( ($item['Total']/1.12),6);
                 }else {
-                    $item['Impuestos'][$item_id-1]['MontoGravable'] = 0;
+                    $item['Impuestos'][0]['MontoGravable'] = 0;
 
                 }
 
                 // Format monto Impuesto
                 if (($item['Total']) > 0) {
-                    $item['Impuestos'][$item_id-1]['MontoImpuesto'] = number_format( ($item['Total'] - $item['Impuestos'][$item_id-1]['MontoGravable']),6);
+                    $item['Impuestos'][0]['MontoImpuesto'] = number_format( ($item['Total'] - $item['Impuestos'][0]['MontoGravable']),6);
                 }else {
-                    $item['Impuestos'][$item_id-1]['MontoImpuesto'] = 0;
+                    $item['Impuestos'][0]['MontoImpuesto'] = 0;
 
                 }
 
@@ -349,10 +349,14 @@ class DteManager extends VirtualAgency
                 $grand_total = $grand_total + $item['Total'];
 
 
-                $total_impuestos = $total_impuestos + $item['Impuestos'][$item_id-1]['MontoImpuesto'];
-
                 $item_id++;
             }
+        }
+
+
+
+        foreach ($items as $index => $item) {
+            $total_impuestos = $total_impuestos + $item['Impuestos'][0]['MontoImpuesto'];
         }
 
         // Format grand total
