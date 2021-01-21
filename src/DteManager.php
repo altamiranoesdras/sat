@@ -426,7 +426,7 @@ class DteManager extends VirtualAgency
                             ],
                             'NITEmisor'             => $this->settings->respuesta->nitEmisor,
                             'NombreEmisor'          => $this->settings->respuesta->informacionEmisor->nombre,
-                            'CodigoEstablecimiento' => 1,
+                            'CodigoEstablecimiento' => $current_branch->numero,
                             'NombreComercial'       => $current_branch->nombre,
                             'CorreoEmisor'          => '',
                             'AfiliacionIVA'         => $this->settings->respuesta->informacionEmisor->afiliacionIVA
