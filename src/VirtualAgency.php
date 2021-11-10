@@ -37,21 +37,21 @@ class VirtualAgency
      */
     protected $endpoint = [
         'authentication' => 'https://farm3.sat.gob.gt/menu/init.do',
-        'application'    => 'https://farm3.sat.gob.gt/menu/menuAplicacion.jsp',
-        'security'       => 'https://farm3.sat.gob.gt/menu/Seguridad.do',
-        'portal'         => 'https://farm3.sat.gob.gt/agenciaVirtual-web/pages/agenciaPortada.jsf',
-        'new-dte'        => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/fel.jsf',
-        'void-dte'       => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/anulacionDte.jsf',
-        'verify-dte'     => 'https://felcons.c.sat.gob.gt/dte-agencia-virtual/dte-consulta',
-        'fel-rest'       => 'https://felav02.c.sat.gob.gt/fel-rest/rest',
-        'fel-recipient'  => 'https://felav02.c.sat.gob.gt/fel-rest/rest/publico/receptor'
+        'application' => 'https://farm3.sat.gob.gt/menu/menuAplicacion.jsp',
+        'security' => 'https://farm3.sat.gob.gt/menu/Seguridad.do',
+        'portal' => 'https://farm3.sat.gob.gt/agenciaVirtual-web/pages/agenciaPortada.jsf',
+        'new-dte' => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/fel.jsf',
+        'void-dte' => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/anulacionDte.jsf',
+        'verify-dte' => 'https://felcons.c.sat.gob.gt/dte-agencia-virtual/dte-consulta',
+        'fel-rest' => 'https://felav02.c.sat.gob.gt/fel-rest/rest',
+        'fel-recipient' => 'https://felav02.c.sat.gob.gt/fel-rest/rest/publico/receptor'
     ];
 
     /**
      * VirtualAgency constructor.
      *
-     * @param string      $username    The SAT virtual agency username.
-     * @param string      $password    The SAT virtual agency password.
+     * @param string $username The SAT virtual agency username.
+     * @param string $password The SAT virtual agency password.
      * @param string|null $session_dir The session directory.
      *
      * @throws \Sat\Error\Authentication
@@ -80,19 +80,25 @@ class VirtualAgency
     /**
      * Send a request to the API.
      *
-     * @param string      $endpoint     The endpoint to send the request.
-     * @param mixed|null  $params       The parameters to be send with the request, can be an array, an object or an
+     * @param string $endpoint The endpoint to send the request.
+     * @param mixed|null $params The parameters to be send with the request, can be an array, an object or an
      *                                  XML string.
-     * @param string      $method       The method for the HTTP call.
-     * @param string|null $referer      The HTTP referer.
+     * @param string $method The method for the HTTP call.
+     * @param string|null $referer The HTTP referer.
      * @param string|null $endpoint_uri Additional URI for the called endpoint.
-     * @param array       $headers      The HTTP headers.
+     * @param array $headers The HTTP headers.
      *
      * @return mixed The raw response from the API.
      * @throws \Sat\Error\InvalidEndpoint
      */
-    protected function sendRequest(string $endpoint, $params = null, string $method = 'GET', string $referer = null, string $endpoint_uri = null, array $headers = [])
-    {
+    protected function sendRequest(
+        string $endpoint,
+        $params = null,
+        string $method = 'GET',
+        string $referer = null,
+        string $endpoint_uri = null,
+        array $headers = []
+    ) {
         $curl = curl_init();
 
         // Set request URL
@@ -107,8 +113,8 @@ class VirtualAgency
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
             if (in_array('Content-Type: application/json;charset=UTF-8', $headers) && (is_array($params) || is_object(
-                        $params
-                    ))) {
+                $params
+            ))) {
                 $params = json_encode($params, JSON_UNESCAPED_UNICODE);
             }
         }
@@ -175,8 +181,8 @@ class VirtualAgency
     {
         $params = [
             'operacion' => 'ACEPTAR',
-            'login'     => $this->username,
-            'password'  => $this->password
+            'login' => $this->username,
+            'password' => $this->password
         ];
         $result = $this->sendRequest('authentication', $params, 'POST');
 
@@ -195,9 +201,9 @@ class VirtualAgency
     {
         $params = [
             'nombreApp' => 'AgenciaVirtual',
-            'pllamada'  => '1'
+            'pllamada' => '1'
         ];
-        $token  = [];
+        $token = [];
         $result = $this->sendRequest('application', $params, 'GET');
 
         if (strpos($result, 'Seguridad.do') !== false) {
@@ -240,7 +246,7 @@ class VirtualAgency
 
             if (isset($html[1])) {
                 $html = explode('" name="desplegar"', $html[1], 2);
-                $url  = urldecode($html[0]);
+                $url = urldecode($html[0]);
             }
         }
 
@@ -274,7 +280,7 @@ class VirtualAgency
 
             if (isset($html[1])) {
                 $html = explode('">', $html[1], 2);
-                $url  = str_replace('&amp;', '&', urldecode($html[0]));
+                $url = str_replace('&amp;', '&', urldecode($html[0]));
                 parse_str($url, $token);
             }
         }
@@ -306,7 +312,7 @@ class VirtualAgency
 
             if (isset($html[1])) {
                 $html = explode('">', $html[1], 2);
-                $url  = str_replace('&amp;', '&', urldecode($html[0]));
+                $url = str_replace('&amp;', '&', urldecode($html[0]));
                 parse_str($url, $token);
             }
         }
@@ -338,7 +344,7 @@ class VirtualAgency
 
             if (isset($html[1])) {
                 $html = explode('">', $html[1], 2);
-                $url  = str_replace('&amp;', '&', urldecode($html[0]));
+                $url = str_replace('&amp;', '&', urldecode($html[0]));
                 parse_str($url, $token);
             }
         }
@@ -385,7 +391,7 @@ class VirtualAgency
         // Fetch the DTE token
         $token = $this->getNewDteToken();
 
-        $headers  = [
+        $headers = [
             'Accept: application/json;charset=utf-8',
             'Content-Type: application/json;charset=UTF-8'
         ];

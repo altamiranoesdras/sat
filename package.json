@@ -1,0 +1,17 @@
+{
+    "name": "abdyfranco-sat",
+    "version": "1.0.0",
+    "description": "Provides an easy-to-use class for reading and parsing DTE documents issued by Superintendencia de Administración Tributaria of Guatemala.",
+    "keywords": [
+        "taxation",
+        "invoice",
+        "sat"
+    ],
+    "author": "Abdy Franco",
+    "license": "MIT",
+    "devDependencies": {
+        "gulp": "^4.0.2",
+        "gulp-beautify": "^3.0.0",
+        "gulp-phpcbf": "^0.1.0"
+    }
+}
