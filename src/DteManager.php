@@ -75,7 +75,8 @@ class DteManager extends VirtualAgency
             // Process request
             $headers = [
                 'Accept: application/json;charset=utf-8',
-                'Content-Type: application/json;charset=UTF-8'
+                'Content-Type: application/json;charset=UTF-8',
+                'Authorization: ' . ($this->settings->respuesta->tokenJWT ?? '')
             ];
             $process = json_decode(
                 $this->sendRequest(
@@ -271,7 +272,7 @@ class DteManager extends VirtualAgency
                 ]
             ],
             'Total' => 0,
-            'MontoGravable' => 0
+            'MontoGrabable' => 0
         ];
 
         if (isset($params['DatosEmision']['Items']['Item'])) {
@@ -321,10 +322,10 @@ class DteManager extends VirtualAgency
                 // Format taxable amount
                 if (($item['Total']) > 0) {
                     $item['Impuestos'][0]['MontoGravable'] = number_format(($item['Total'] / 1.12), 6);
-                    $item['MontoGravable'] = number_format(($item['Total'] / 1.12), 6);
+                    $item['MontoGrabable'] = number_format(($item['Total'] / 1.12), 6);
                 } else {
                     $item['Impuestos'][0]['MontoGravable'] = 0;
-                    $item['MontoGravable'] = 0;
+                    $item['MontoGrabable'] = 0;
                 }
 
                 // Format taxes amount
@@ -372,17 +373,15 @@ class DteManager extends VirtualAgency
         // Build complements array
         $complements = [];
 
-        if ($params['DatosEmision']['DatosGenerales']['Exp'] == 'SI') {
+        if (($params['DatosEmision']['DatosGenerales']['Exp'] ?? 'NO') == 'SI') {
             $complements[] = [
                 'IDComplemento' => 'EXP',
                 'NombreComplemento' => 'Exportacion',
                 'URIComplemento' => 'text',
                 'Exportacion' => [
-                    'DireccionConsignatarioODestinatario' => isset($params['DatosEmision']['Receptor']['DireccionReceptor']) ?
-                        $params['DatosEmision']['Receptor']['DireccionReceptor'] : '',
+                    'DireccionConsignatarioODestinatario' => $params['DatosEmision']['Receptor']['DireccionReceptor'] ?? '',
                     'incoterm' => 'ZZZ',
-                    'NombreConsignatarioODestinatario' => isset($params['DatosEmision']['Receptor']['NombreReceptor']) ?
-                        $params['DatosEmision']['Receptor']['NombreReceptor'] : '',
+                    'NombreConsignatarioODestinatario' => $params['DatosEmision']['Receptor']['NombreReceptor'] ?? '',
                     'version' => '1'
                 ]
             ];
@@ -391,7 +390,7 @@ class DteManager extends VirtualAgency
         // Build phrases array
         $phrases = $this->getPhrases();
 
-        if ($params['DatosEmision']['DatosGenerales']['Exp'] == 'SI') {
+        if (($params['DatosEmision']['DatosGenerales']['Exp'] ?? 'NO') == 'SI') {
             $available_phrases = $this->getAvailablePhrases();
             $phrases[] = $available_phrases[1];
         }
@@ -402,13 +401,10 @@ class DteManager extends VirtualAgency
                 'DTE' => [
                     'DatosEmision' => [
                         'DatosGenerales' => [
-                            'Tipo' => isset($params['DatosEmision']['DatosGenerales']['Tipo']) ?
-                                $params['DatosEmision']['DatosGenerales']['Tipo'] : 'FPEQ',
-                            'Exp' => isset($params['DatosEmision']['DatosGenerales']['Exp']) ?
-                                $params['DatosEmision']['DatosGenerales']['Exp'] : 'NO',
+                            'Tipo' => $params['DatosEmision']['DatosGenerales']['Tipo'] ?? 'FPEQ',
+                            'Exp' => $params['DatosEmision']['DatosGenerales']['Exp'] ?? 'NO',
                             'FechaHoraEmisionForm' => date('Y-m-d\TH:i:s.v\Z'),
-                            'CodigoMoneda' => isset($params['DatosEmision']['DatosGenerales']['CodigoMoneda']) ?
-                                $params['DatosEmision']['DatosGenerales']['CodigoMoneda'] : 'GTQ',
+                            'CodigoMoneda' => $params['DatosEmision']['DatosGenerales']['CodigoMoneda'] ?? 'GTQ',
                         ],
                         'Emisor' => [
                             'DireccionEmisor' => [
@@ -428,25 +424,23 @@ class DteManager extends VirtualAgency
                             'AfiliacionIVA' => $this->settings->respuesta->informacionEmisor->afiliacionIVA
                         ],
                         'Receptor' => [
-                            'IDReceptor' => isset($params['DatosEmision']['Receptor']['IDReceptor']) ?
-                                $params['DatosEmision']['Receptor']['IDReceptor'] : 'CF',
-                            'TipoEspecial' => isset($params['DatosEmision']['Receptor']['TipoEspecial']) ?
-                                $params['DatosEmision']['Receptor']['TipoEspecial'] : null,
-                            'NombreReceptor' => isset($params['DatosEmision']['Receptor']['NombreReceptor']) ?
-                                $params['DatosEmision']['Receptor']['NombreReceptor'] : 'CONSUMIDOR FINAL',
+                            'IDReceptor' => $params['DatosEmision']['Receptor']['IDReceptor'] ?? 'CF',
+                            'TipoEspecial' => $params['DatosEmision']['Receptor']['TipoEspecial'] ?? null,
+                            'NombreReceptor' => $params['DatosEmision']['Receptor']['NombreReceptor'] ??
+                                'CONSUMIDOR FINAL',
                             'CorreoReceptor' => ''
                         ],
                         'Items' => [
                             'Item' => $items
                         ],
                         'Totales' => [
-                            'GranTotal' => $grand_total
-                        ],
-                        'TotalImpuestos' => [
-                            'TotalImpuesto' => [
-                                [
-                                    'NombreCorto' => 'IVA',
-                                    'TotalMontoImpuesto' => $taxes,
+                            'GranTotal' => $grand_total,
+                            'TotalImpuestos' => [
+                                'TotalImpuesto' => [
+                                    [
+                                        'NombreCorto' => 'IVA',
+                                        'TotalMontoImpuesto' => (string) $taxes,
+                                    ]
                                 ]
                             ]
                         ],
@@ -479,10 +473,11 @@ class DteManager extends VirtualAgency
                     ]
                 ],
                 'SignatureValue' => ''
-            ]
+            ],
+            'nombreNavegador' => 'Safari 14'
         ];
 
-        if ($dte_request['SAT']['DTE']['DatosEmision']['DatosGenerales']['Exp'] == 'NO') {
+        if (($params['DatosEmision']['DatosGenerales']['Exp'] ?? 'NO') == 'NO') {
             unset($dte_request['SAT']['DTE']['DatosEmision']['DatosGenerales']['Exp']);
         }
 

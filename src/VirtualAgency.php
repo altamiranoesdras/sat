@@ -368,10 +368,11 @@ class VirtualAgency
         return (object) json_decode(
             $this->sendRequest(
                 'fel-rest',
-                [],
-                'GET',
-                $this->endpoint['portal'],
-                '/publico/configuracion/' . $token['Nit'] . '/' . $token['Clave']
+                ['usuario' => $token['Nit'], 'clave' => $token['Clave']],
+                'POST',
+                $this->endpoint['new-dte'] . '?' . http_build_query($token),
+                '/privado/DatosIniciales',
+                ['Content-Type: application/json;charset=UTF-8']
             )
         );
     }
