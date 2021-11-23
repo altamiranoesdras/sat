@@ -44,7 +44,9 @@ class VirtualAgency
         'void-dte' => 'https://felav.c.sat.gob.gt/fel-web/privado/vistas/anulacionDte.jsf',
         'verify-dte' => 'https://felcons.c.sat.gob.gt/dte-agencia-virtual/dte-consulta',
         'fel-rest' => 'https://felav02.c.sat.gob.gt/fel-rest/rest',
-        'fel-recipient' => 'https://felav02.c.sat.gob.gt/fel-rest/rest/publico/receptor'
+        'fel-recipient' => 'https://felav02.c.sat.gob.gt/fel-rest/rest/publico/receptor',
+        'fel-reference' => 'https://felav02.c.sat.gob.gt/fel-rest/rest/publico/consultaReferencia',
+        'fel-public' => 'https://felav02.c.sat.gob.gt/fel-rest/rest/publico'
     ];
 
     /**
