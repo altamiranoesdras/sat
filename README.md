@@ -15,7 +15,6 @@ $invoice = $DteParser->getParsedDocument(); // Returns an object with the parsed
 ```
 
 ## Pending Features
-- Add the ability to void existing DTE documents.
 - Add the ability to verify existing DTE documents.
 
 ## Requirements

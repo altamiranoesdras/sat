@@ -25,18 +25,18 @@ class TaxCalendar
      * @var array An array containing the months names in spanish.
      */
     private $months = [
-        'ENERO'      => '01',
-        'FEBRERO'    => '02',
-        'MARZO'      => '03',
-        'ABRIL'      => '04',
-        'MAYO'       => '05',
-        'JUNIO'      => '06',
-        'JULIO'      => '07',
-        'AGOSTO'     => '08',
+        'ENERO' => '01',
+        'FEBRERO' => '02',
+        'MARZO' => '03',
+        'ABRIL' => '04',
+        'MAYO' => '05',
+        'JUNIO' => '06',
+        'JULIO' => '07',
+        'AGOSTO' => '08',
         'SEPTIEMBRE' => '09',
-        'OCTUBRE'    => '10',
-        'NOVIEMBRE'  => '11',
-        'DICIEMBRE'  => '12'
+        'OCTUBRE' => '10',
+        'NOVIEMBRE' => '11',
+        'DICIEMBRE' => '12'
     ];
 
     /**
@@ -66,7 +66,7 @@ class TaxCalendar
      */
     private function getCalendarOptions() : stdClass
     {
-        $first_part  = explode('ComboBox("calendario:cmbSeleccionaMes",', $this->html, 2);
+        $first_part = explode('ComboBox("calendario:cmbSeleccionaMes",', $this->html, 2);
         $second_part = explode(');</script>', $first_part[1], 2);
 
         $json = str_replace('\'', '"', $second_part[0]);
@@ -81,7 +81,7 @@ class TaxCalendar
      */
     public function getEvents() : array
     {
-        $first_part  = explode('<tbody id="calendario:data:tb">', $this->html, 2);
+        $first_part = explode('<tbody id="calendario:data:tb">', $this->html, 2);
         $second_part = explode('</tbody>', $first_part[1], 2);
 
         // Get and parese HTML elements
@@ -102,7 +102,7 @@ class TaxCalendar
 
         // Build the events array
         $events = [];
-        $day    = null;
+        $day = null;
 
         foreach ($html_elements as $element) {
             $event = [];
@@ -115,19 +115,19 @@ class TaxCalendar
 
                 // Set event date
                 $calendar_options = $this->getCalendarOptions()->listOptions->itemsText;
-                $calendar_date    = explode(' ', $calendar_options[0], 2);
+                $calendar_date = explode(' ', $calendar_options[0], 2);
 
                 $event = [
-                    'date'      => date(
+                    'date' => date(
                         'd/m/Y',
                         strtotime($day . '-' . $this->months[strtoupper($calendar_date[0])] . '-' . $calendar_date[1])
                     ),
                     'timestamp' => strtotime(
                         $day . '-' . $this->months[strtoupper($calendar_date[0])] . '-' . $calendar_date[1]
                     ),
-                    'day'       => $day,
-                    'month'     => $this->months[strtoupper($calendar_date[0])],
-                    'year'      => $calendar_date[1]
+                    'day' => $day,
+                    'month' => $this->months[strtoupper($calendar_date[0])],
+                    'year' => $calendar_date[1]
                 ];
 
                 // Get the event title

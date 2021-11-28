@@ -12,7 +12,7 @@ require __DIR__ . '/../bootstrap.php';
 $TaxCalendar = new TaxCalendar();
 
 /**
- * Pagalo::getUser() Test
+ * TaxCalendar::getEvents() Test
  *
  * @assert type Check if the returned response it's an array.
  * @assert contains Check if the returned array has the expected properties.

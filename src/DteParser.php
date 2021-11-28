@@ -80,7 +80,7 @@ class DteParser
     public function getParsedDocument($json = false)
     {
         $dte = $this->getDte();
-        $ds  = $this->getSignature();
+        $ds = $this->getSignature();
 
         $document = (array) json_decode(json_encode($dte));
 
@@ -90,30 +90,30 @@ class DteParser
 
             // Get "DatosGenerales" attributes
             if (isset($dte->SAT->DTE->DatosEmision->DatosGenerales)) {
-                $content    = (array) $dte->SAT->DTE->DatosEmision->DatosGenerales;
+                $content = (array) $dte->SAT->DTE->DatosEmision->DatosGenerales;
                 $attributes = (array) $dte->SAT->DTE->DatosEmision->DatosGenerales->attributes();
                 $attributes = $attributes['@attributes'];
-                $node       = (object) array_merge($content, $attributes);
+                $node = (object) array_merge($content, $attributes);
 
                 $document['DatosEmision']->DatosGenerales = $node;
             }
 
             // Get "Emisor" attributes
             if (isset($dte->SAT->DTE->DatosEmision->Emisor)) {
-                $content    = (array) $dte->SAT->DTE->DatosEmision->Emisor;
+                $content = (array) $dte->SAT->DTE->DatosEmision->Emisor;
                 $attributes = (array) $dte->SAT->DTE->DatosEmision->Emisor->attributes();
                 $attributes = $attributes['@attributes'];
-                $node       = (object) array_merge($content, $attributes);
+                $node = (object) array_merge($content, $attributes);
 
                 $document['DatosEmision']->Emisor = $node;
             }
 
             // Get "Receptor" attributes
             if (isset($dte->SAT->DTE->DatosEmision->Receptor)) {
-                $content    = (array) $dte->SAT->DTE->DatosEmision->Receptor;
+                $content = (array) $dte->SAT->DTE->DatosEmision->Receptor;
                 $attributes = (array) $dte->SAT->DTE->DatosEmision->Receptor->attributes();
                 $attributes = $attributes['@attributes'];
-                $node       = (object) array_merge($content, $attributes);
+                $node = (object) array_merge($content, $attributes);
 
                 $document['DatosEmision']->Receptor = $node;
             }
@@ -124,18 +124,18 @@ class DteParser
                     $document['DatosEmision']->Frases->Frase = [];
 
                     foreach ($dte->SAT->DTE->DatosEmision->Frases->Frase as $key => $value) {
-                        $content    = (array) $value;
+                        $content = (array) $value;
                         $attributes = (array) $value->attributes();
                         $attributes = $attributes['@attributes'];
-                        $node       = (object) array_merge($content, $attributes);
+                        $node = (object) array_merge($content, $attributes);
 
                         $document['DatosEmision']->Frases->Frase[] = $node;
                     }
-                } else if (is_object($document['DatosEmision']->Frases->Frase)) {
-                    $content    = (array) $dte->SAT->DTE->DatosEmision->Frases->Frase;
+                } elseif (is_object($document['DatosEmision']->Frases->Frase)) {
+                    $content = (array) $dte->SAT->DTE->DatosEmision->Frases->Frase;
                     $attributes = (array) $dte->SAT->DTE->DatosEmision->Frases->Frase->attributes();
                     $attributes = $attributes['@attributes'];
-                    $node       = (object) array_merge($content, $attributes);
+                    $node = (object) array_merge($content, $attributes);
 
                     $document['DatosEmision']->Frases->Frase = $node;
                 }
@@ -147,18 +147,18 @@ class DteParser
                     $document['DatosEmision']->Items->Item = [];
 
                     foreach ($dte->SAT->DTE->DatosEmision->Items->Item as $key => $value) {
-                        $content    = (array) $value;
+                        $content = (array) $value;
                         $attributes = (array) $value->attributes();
                         $attributes = $attributes['@attributes'];
-                        $node       = (object) array_merge($content, $attributes);
+                        $node = (object) array_merge($content, $attributes);
 
                         $document['DatosEmision']->Items->Item[] = $node;
                     }
-                } else if (is_object($document['DatosEmision']->Items->Item)) {
-                    $content    = (array) $dte->SAT->DTE->DatosEmision->Items->Item;
+                } elseif (is_object($document['DatosEmision']->Items->Item)) {
+                    $content = (array) $dte->SAT->DTE->DatosEmision->Items->Item;
                     $attributes = (array) $dte->SAT->DTE->DatosEmision->Items->Item->attributes();
                     $attributes = $attributes['@attributes'];
-                    $node       = (object) array_merge($content, $attributes);
+                    $node = (object) array_merge($content, $attributes);
 
                     $document['DatosEmision']->Items->Item = $node;
                 }
@@ -170,21 +170,21 @@ class DteParser
                     $document['DatosEmision']->Complementos->Item = [];
 
                     foreach ($dte->SAT->DTE->DatosEmision->Complementos->Complemento as $key => $value) {
-                        $content    = (array) $value->children('cex', true);
+                        $content = (array) $value->children('cex', true);
                         $attributes = (array) $value->attributes();
                         $attributes = $attributes['@attributes'];
-                        $node       = (object) array_merge($content, $attributes);
+                        $node = (object) array_merge($content, $attributes);
 
                         $document['DatosEmision']->Complementos->Complemento[] = $node;
                     }
-                } else if (is_object($document['DatosEmision']->Complementos->Complemento)) {
-                    $content    = (array) $dte->SAT->DTE->DatosEmision->Complementos->Complemento->children(
+                } elseif (is_object($document['DatosEmision']->Complementos->Complemento)) {
+                    $content = (array) $dte->SAT->DTE->DatosEmision->Complementos->Complemento->children(
                         'cex',
                         true
                     );
                     $attributes = (array) $dte->SAT->DTE->DatosEmision->Complementos->Complemento->attributes();
                     $attributes = $attributes['@attributes'];
-                    $node       = (object) array_merge($content, $attributes);
+                    $node = (object) array_merge($content, $attributes);
 
                     $document['DatosEmision']->Complementos->Complemento = $node;
                 }
@@ -192,10 +192,10 @@ class DteParser
 
             // Get "NumeroAutorizacion" attributes
             if (isset($dte->SAT->DTE->Certificacion->NumeroAutorizacion)) {
-                $content    = ['NumeroAutorizacion' => $document['Certificacion']->NumeroAutorizacion];
+                $content = ['NumeroAutorizacion' => $document['Certificacion']->NumeroAutorizacion];
                 $attributes = (array) $dte->SAT->DTE->Certificacion->NumeroAutorizacion->attributes();
                 $attributes = $attributes['@attributes'];
-                $node       = (object) array_merge($content, $attributes);
+                $node = (object) array_merge($content, $attributes);
 
                 $document['Certificacion']->NumeroAutorizacion = $node;
             }
@@ -207,20 +207,20 @@ class DteParser
 
             // Get "CanonicalizationMethod" attributes
             if (isset($ds->Signature->SignedInfo->CanonicalizationMethod)) {
-                $content    = (array) $ds->Signature->SignedInfo->CanonicalizationMethod;
+                $content = (array) $ds->Signature->SignedInfo->CanonicalizationMethod;
                 $attributes = (array) $ds->Signature->SignedInfo->CanonicalizationMethod->attributes();
                 $attributes = $attributes['@attributes'];
-                $node       = (object) array_merge($content, $attributes);
+                $node = (object) array_merge($content, $attributes);
 
                 $document['Signature']->SignedInfo->CanonicalizationMethod = $node;
             }
 
             // Get "SignatureMethod" attributes
             if (isset($ds->Signature->SignedInfo->SignatureMethod)) {
-                $content    = (array) $ds->Signature->SignedInfo->SignatureMethod;
+                $content = (array) $ds->Signature->SignedInfo->SignatureMethod;
                 $attributes = (array) $ds->Signature->SignedInfo->SignatureMethod->attributes();
                 $attributes = $attributes['@attributes'];
-                $node       = (object) array_merge($content, $attributes);
+                $node = (object) array_merge($content, $attributes);
 
                 $document['Signature']->SignedInfo->SignatureMethod = $node;
             }
@@ -231,18 +231,18 @@ class DteParser
                     $document['Signature']->SignedInfo->Reference = [];
 
                     foreach ($ds->Signature->SignedInfo->Reference as $key => $value) {
-                        $content    = (array) $value;
+                        $content = (array) $value;
                         $attributes = (array) $value->attributes();
                         $attributes = $attributes['@attributes'];
-                        $node       = (object) array_merge($content, $attributes);
+                        $node = (object) array_merge($content, $attributes);
 
                         $document['Signature']->SignedInfo->Reference[] = $node;
                     }
-                } else if (is_object($document['Signature']->SignedInfo->Reference)) {
-                    $content    = (array) $ds->Signature->SignedInfo->Reference;
+                } elseif (is_object($document['Signature']->SignedInfo->Reference)) {
+                    $content = (array) $ds->Signature->SignedInfo->Reference;
                     $attributes = (array) $ds->Signature->SignedInfo->Reference->attributes();
                     $attributes = $attributes['@attributes'];
-                    $node       = (object) array_merge($content, $attributes);
+                    $node = (object) array_merge($content, $attributes);
 
                     $document['Signature']->SignedInfo->Reference = $node;
                 }
@@ -250,17 +250,17 @@ class DteParser
 
             // Get "SignatureValue" attributes
             if (isset($ds->Signature->SignatureValue)) {
-                $content    = ['SignatureValue' => $document['Signature']->SignatureValue];
+                $content = ['SignatureValue' => $document['Signature']->SignatureValue];
                 $attributes = (array) $ds->Signature->SignatureValue->attributes();
                 $attributes = $attributes['@attributes'];
-                $node       = (object) array_merge($content, $attributes);
+                $node = (object) array_merge($content, $attributes);
 
                 $document['Signature']->SignatureValue = $node;
             }
 
             // Get "Object" namespace
             if (isset($ds->Signature->Object)) {
-                $node                          = $ds->Signature->Object->children('xades', true);
+                $node = $ds->Signature->Object->children('xades', true);
                 $document['Signature']->Object = $node;
             }
         }
