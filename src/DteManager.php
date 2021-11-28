@@ -439,7 +439,7 @@ class DteManager extends VirtualAgency
                                 'TotalImpuesto' => [
                                     [
                                         'NombreCorto' => 'IVA',
-                                        'TotalMontoImpuesto' => (string) $taxes,
+                                        'TotalMontoImpuesto' => (string) number_format($taxes,6),
                                     ]
                                 ]
                             ]
