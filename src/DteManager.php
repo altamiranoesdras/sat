@@ -481,6 +481,10 @@ class DteManager extends VirtualAgency
             unset($dte_request['SAT']['DTE']['DatosEmision']['DatosGenerales']['Exp']);
         }
 
+        if (($params['DatosEmision']['DatosGenerales']['Tipo'] ?? '')=='FPEQ') {
+            unset($dte_request['SAT']['DTE']['DatosEmision']['Totales']['TotalImpuestos']);
+        }
+
         if (empty($complements)) {
             unset($dte_request['SAT']['DTE']['DatosEmision']['Complementos']);
         }
