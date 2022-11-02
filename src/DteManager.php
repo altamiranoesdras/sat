@@ -408,7 +408,7 @@ class DteManager extends VirtualAgency
                         ],
                         'Emisor' => [
                             'DireccionEmisor' => [
-                                'Direccion' => $current_branch->calleAvenida . '  ' . $current_branch->numeroCasa .
+                                'Direccion' => $current_branch->calleAvenida . '  ' . ($current_branch->numeroCasa ?? '') .
                                     ' ' . ($current_branch->colonia ?? ''). ', zona ' . $current_branch->zona . ', ' .
                                     $current_branch->municipio . ', ' . $current_branch->departamento,
                                 'CodigoPostal' => 1,
