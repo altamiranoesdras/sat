@@ -297,21 +297,21 @@ class DteManager extends VirtualAgency
 
                 // Format discount
                 if ($item['Descuento'] > 0) {
-                    $item['Descuento'] = number_format($item['Descuento'], 6);
+                    $item['Descuento'] = $this->nf($item['Descuento'], 6);
                 } else {
                     $item['Descuento'] = 0;
                 }
 
                 // Format total price without discount
                 if (($item['PrecioUnitario'] * $item['Cantidad']) > 0) {
-                    $item['Precio'] = number_format(($item['PrecioUnitario'] * $item['Cantidad']), 6);
+                    $item['Precio'] = $this->nf(($item['PrecioUnitario'] * $item['Cantidad']), 6);
                 } else {
                     $item['Precio'] = 0;
                 }
 
                 // Format total price with discount
                 if ((($item['PrecioUnitario'] * $item['Cantidad']) - $item['Descuento']) > 0) {
-                    $item['Total'] = number_format(
+                    $item['Total'] = $this->nf(
                         (($item['PrecioUnitario'] * $item['Cantidad']) - $item['Descuento']),
                         6
                     );
@@ -321,8 +321,8 @@ class DteManager extends VirtualAgency
 
                 // Format taxable amount
                 if (($item['Total']) > 0) {
-                    $item['Impuestos'][0]['MontoGravable'] = number_format(($item['Total'] / 1.12), 6);
-                    $item['MontoGrabable'] = number_format(($item['Total'] / 1.12), 6);
+                    $item['Impuestos'][0]['MontoGravable'] = $this->nf(($item['Total'] / 1.12), 6);
+                    $item['MontoGrabable'] = $this->nf(($item['Total'] / 1.12), 6);
                 } else {
                     $item['Impuestos'][0]['MontoGravable'] = 0;
                     $item['MontoGrabable'] = 0;
@@ -330,7 +330,7 @@ class DteManager extends VirtualAgency
 
                 // Format taxes amount
                 if (($item['Total']) > 0) {
-                    $item['Impuestos'][0]['MontoImpuesto'] = number_format(
+                    $item['Impuestos'][0]['MontoImpuesto'] = $this->nf(
                         ($item['Total'] - $item['Impuestos'][$item_id - 1]['MontoGravable']),
                         6
                     );
@@ -351,7 +351,7 @@ class DteManager extends VirtualAgency
         }
 
         // Format grand total
-        $grand_total = number_format($grand_total, 6);
+        $grand_total = $this->nf($grand_total, 6);
 
         // Get branch information
         $current_branch = [];
@@ -439,7 +439,7 @@ class DteManager extends VirtualAgency
                                 'TotalImpuesto' => [
                                     [
                                         'NombreCorto' => 'IVA',
-                                        'TotalMontoImpuesto' => (string) number_format($taxes,6),
+                                        'TotalMontoImpuesto' => (string) $this->nf($taxes,6),
                                     ]
                                 ]
                             ]
@@ -490,5 +490,9 @@ class DteManager extends VirtualAgency
         }
 
         return $dte_request;
+    }
+
+    private function nf($numero,$decimales){
+        return number_format($numero,6,'.','');
     }
 }
